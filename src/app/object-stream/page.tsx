@@ -1,23 +1,32 @@
 'use client';
 
 import { experimental_useObject as useObject } from '@ai-sdk/react';
-import { notificationSchema } from '../api/use-object/schema';
+import { notificationSchema } from '../api/use-object-stream/schema';
 import { z } from 'zod';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function Page() {
-  const { object, submit, isLoading, stop } = useObject({
-    api: '/api/use-object',
-    schema: z.array(notificationSchema),
+  const { object, submit, isLoading } = useObject({
+    api: '/api/use-object-stream',
+    schema: notificationSchema,
   });
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [input, setInput] = useState('');
+  const [cards, setCards] = useState(Array(9).fill(null));
 
-  // Create a fixed array of 9 cards
-  const cards = Array(9).fill(null).map((_, index) => {
-    // If we have data for this index, use it, otherwise return null
-    return object?.[index] || null;
-  });
+  useEffect(() => {
+    if (object && !!object.notifications?.length) {
+      setCards(prevCards => {
+        const newCards = [...prevCards];
+        object.notifications?.forEach((item, index) => {
+          if (item) {
+            newCards[index] = item;
+          }
+        });
+        return newCards;
+      });
+    }
+  }, [object]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -39,10 +48,10 @@ export default function Page() {
             >
               {notification ? (
                 <>
-                  <h3 className="text-xl font-semibold text-gray-800 mb-2">{notification.title}</h3>
-                  <p className="text-gray-600 mb-4">{notification.description}</p>
+                  <h3 className="text-xl font-semibold text-gray-800 mb-2">{notification?.title}</h3>
+                  <p className="text-gray-600 mb-4">{notification?.description}</p>
                   <div className="space-y-2">
-                    {notification.suggestions?.map((suggestion, idx) => (
+                    {notification?.suggestions?.map((suggestion: string, idx: number) => (
                       suggestion && (
                         <p key={idx} className="text-sm text-gray-500 flex items-center">
                           <span className="mr-2">•</span>
@@ -79,8 +88,8 @@ export default function Page() {
             disabled={isLoading}
             className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50"
           >
-            Generate areas
-          </button>
+          Generate areas
+        </button>
         </form>
       )}
     </div>
