@@ -54,7 +54,6 @@ export default function Page() {
                     {notification?.suggestions?.map((suggestion: string, idx: number) => (
                       suggestion && (
                         <p key={idx} className="text-sm text-gray-500 flex items-center">
-                          <span className="mr-2">•</span>
                           {suggestion}
                         </p>
                       )
