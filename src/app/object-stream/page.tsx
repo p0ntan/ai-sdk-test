@@ -2,7 +2,6 @@
 
 import { experimental_useObject as useObject } from '@ai-sdk/react';
 import { notificationSchema } from '../api/use-object-stream/schema';
-import { z } from 'zod';
 import { useEffect, useState } from 'react';
 
 export default function Page() {

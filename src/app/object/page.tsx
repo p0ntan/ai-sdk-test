@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { useState } from 'react';
 
 export default function Page() {
-  const { object, submit, isLoading, stop } = useObject({
+  const { object, submit, isLoading } = useObject({
     api: '/api/use-object',
     schema: z.array(notificationSchema),
   });
